@@ -1,0 +1,4 @@
+.\ngrok.exe http 8000    
+
+and 
+run server.py 

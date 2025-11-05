@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatKit Local Test</title>
+
+    <style>
+        body, html { 
+            height: 100%; 
+            margin: 0; 
+            font-family: sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            background-color: #f0f0f0; 
+        }
+        #chat-widget { 
+            width: 400px; 
+            height: 600px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            border-radius: 8px; 
+        }
+    </style>
+    
+    <style>
+        openai-chatkit::part(start-screen) {
+            justify-content: center;
+        }
+    </style>
+    
+    <script src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js" async></script>
+</head>
+<body>
+
+    <openai-chatkit id="chat-widget"></openai-chatkit>
+
+    <script>
+        // This waits for the <openai-chatkit> element to be fully loaded
+        window.customElements.whenDefined('openai-chatkit').then(() => {
+            
+            const chatkit = document.getElementById('chat-widget');
+            
+            // We are passing your entire playground object in here
+            chatkit.setOptions({
+                
+                // --- THIS IS OUR WORKING API CODE ---
+                // We keep this block exactly as it was.
+                api: {
+                    async getClientSecret() {
+                        try {
+                            const response = await fetch('/api/chatkit/session', {
+                                method: 'POST'
+                            });
+                            
+                            if (!response.ok) {
+                                console.error("Failed to fetch client secret");
+                                return;
+                            }
+                            
+                            const { client_secret } = await response.json();
+                            return client_secret;
+                        
+                        } catch(e) {
+                            console.error("Error connecting to server. Is it running?", e);
+                        }
+                    }
+                },
+                // --- END OF API CODE ---
+
+                // --- ALL YOUR NEW PLAYGROUND CODE ---
+                theme: {
+                  colorScheme: 'light',
+                  radius: 'round',
+                  density: 'normal',
+                  color: {
+                    grayscale: {
+                      hue: 222,
+                      tint: 9,
+                      shade: 2
+                    },
+                    accent: {
+                      primary: '#7e1980',
+                      level: 1
+                    }
+                  },
+                  typography: {
+                    baseSize: 16,
+                    fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
+                    fontFamilyMono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
+                    fontSources: [
+                      {
+                        family: 'OpenAI Sans',
+                        src: 'https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Regular.woff2',
+                        weight: 400,
+                        style: 'normal',
+                        display: 'swap'
+                      }
+                      // ...and 7 more font sources
+                    ]
+                  }
+                },
+                composer: {
+                  attachments: {
+                    enabled: true,
+                    maxCount: 5,
+                    maxSize: 10485760
+                  },
+                  tools: [
+                    {
+                      id: 'search_docs',
+                      label: 'Search docs',
+                      shortLabel: 'Docs',
+                      placeholderOverride: 'Search documentation',
+                      icon: 'book-open',
+                      pinned: false
+                    }
+                    // ...and 1 more tool
+                  ],
+                },
+                startScreen: {
+                  greeting: 'OCR2',
+                  prompts: [
+                    {
+                      icon: 'circle-question',
+                      label: 'What is ChatKit?',
+                      prompt: 'What is ChatKit?'
+                    }
+                    // ...and 4 more prompts
+                  ],
+                }
+                // --- END OF PLAYGROUND CODE ---
+            });
+
+            console.log("ChatKit is ready and NEW playground options are set!");
+
+        });
+    </script>
+
+</body>
+</html>

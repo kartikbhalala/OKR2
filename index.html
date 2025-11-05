@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatKit Local Test</title>
+    
+    <style>
+        body, html { 
+            height: 100%; 
+            margin: 0; 
+            font-family: sans-serif; 
+        }
+
+        /* 1. This is our main container */
+        #app-container {
+            display: flex;
+            flex-direction: column; /* Stacks the chat and disclaimer vertically */
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* 2. The chat widget now "grows" to fill the available space */
+        #chat-widget { 
+            flex-grow: 1;  /* This makes it fill all space *except* for the disclaimer */
+            width: 100%;
+            height: 1px;   /* A flex-grow trick to make it fill height */
+        }
+
+        /* 3. This is the style for your new disclaimer text */
+        #disclaimer {
+            text-align: center;
+            font-size: 12px;
+            color: #555; /* A soft gray */
+            padding: 8px 0;
+            background-color: #f4f4f4; /* This is the light grey background */
+        }
+    </style>
+    <script src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js" async></script>
+</head>
+<body>
+
+    <div id="app-container">
+        
+        <openai-chatkit id="chat-widget"></openai-chatkit>
+
+        <div id="disclaimer">
+            OKR2 is an early experimental prototype and currently only can check public data.
+        </div>
+    </div>
+    <script>
+        // This waits for the <openai-chatkit> element to be fully loaded
+        window.customElements.whenDefined('openai-chatkit').then(() => {
+            
+            const chatkit = document.getElementById('chat-widget');
+            
+            // Now this function will exist
+            chatkit.setOptions({
+                api: {
+                    async getClientSecret() {
+                        try {
+                            // This path is correct because it's on the same server
+                            const response = await fetch('/api/chatkit/session', {
+                                method: 'POST'
+                            });
+                            
+                            if (!response.ok) {
+                                console.error("Failed to fetch client secret");
+                                return;
+                            }
+                            
+                            const { client_secret } = await response.json();
+                            return client_secret;
+                        
+                        } catch(e) {
+                            console.error("Error connecting to server. Is it running?", e);
+                        }
+                    }
+                },
+
+                // This is the header with the title
+                header: {
+                    title: {
+                        text: 'OKR2'
+                    }
+                },
+
+                // This is your theme
+                theme: {
+                  colorScheme: 'light',
+                  radius: 'round',
+                  density: 'spacious',
+                  typography: {
+                    baseSize: 16,
+                    fontFamily: 'Inter, sans-serif',
+                    fontSources: [
+                      {
+                        family: 'Inter',
+                        src: 'https://rsms.me/inter/font-files/Inter-Regular.woff2',
+                        weight: 400,
+                        style: 'normal'
+                      }
+                    ]
+                  }
+                },
+
+                // This is your start screen
+                startScreen: {
+                    greeting: "Hello. I can help map research projects. What team or topic are you interested in?"
+                }
+            });
+
+            console.log("ChatKit is ready with disclaimer!");
+
+        });
+    </script>
+
+</body>
+</html>
