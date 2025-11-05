@@ -6,7 +6,6 @@ from fastapi.responses import FileResponse  # This is new
 import uvicorn
 import aiofiles
 # --- 1. PASTE YOUR *NEW* API KEY HERE ---
-os.environ["OPENAI_API_KEY"] = "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"
 
 # --- 2. YOUR WORKFLOW ID ---
 WORKFLOW_ID = "wf_69055a14b5d481908dc7b441696562b008626578dc8f23d2"
@@ -54,8 +53,6 @@ if __name__ == "__main__":
     print(f"Using Workflow ID: {WORKFLOW_ID}")
     
     # --- THIS WARNING IS NOW CORRECT ---
-    if os.environ.get("OPENAI_API_KEY") == "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":
-        print("\n*** WARNING: Paste your new OpenAI API key into server.py ***\n")
     
     # --- THIS PORT IS CORRECT ---
     uvicorn.run(app, host="127.0.0.1", port=8000)
