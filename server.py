@@ -6,7 +6,6 @@ from fastapi.responses import FileResponse  # This is new
 import uvicorn
 import aiofiles
 
-
 # --- 2. YOUR WORKFLOW ID ---
 WORKFLOW_ID = "wf_69055a14b5d481908dc7b441696562b008626578dc8f23d2"
 
@@ -48,7 +47,13 @@ async def get_index():
 
 
 if __name__ == "__main__":
-    # --- THIS PRINT STATEMENT IS NOW CORRECT ---
-    print(f"Starting ONE server on http://localhost:8000")
+    # --- THIS BLOCK IS MODIFIED FOR RENDER ---
+    print(f"Starting ONE server...")
     print(f"Using Workflow ID: {WORKFLOW_ID}")
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+
+    # Render will set a "PORT" environment variable.
+    # We default to 8000 if it's not set.
+    port = int(os.environ.get("PORT", 8000))
+    
+    # We must run on 0.0.0.0 for Render to access the server.
+    uvicorn.run(app, host="0.0.0.0", port=port)
